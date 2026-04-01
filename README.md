@@ -111,5 +111,83 @@ export class BookModule {}
 
 #### create-book.input.ts
 ```bash
+import { InputType, Field } from "@nestjs/graphql";
+import { IsNotEmpty, IsString } from "class-validator";
 
+@InputType()
+export class CreateBookInput {
+    @Field()
+    @IsString()
+    @IsNotEmpty()
+    title: string;
+
+    @Field({ nullable: true })
+    @IsString()
+    description?: string;
+
+    @Field()
+    @IsString()
+    @IsNotEmpty()
+    author: string;
+}
 ```
+
+#### update-book.input.ts
+```bash
+import { CreateBookInput } from "./create-book.input";
+import { InputType, Field, PartialType, ID } from "@nestjs/graphql";
+import { IsNotEmpty } from "class-validator";
+
+@InputType()
+export class UpdateBookInput extends PartialType(CreateBookInput) {
+    @Field(() => ID)
+    @IsNotEmpty()
+    id: string;
+}
+```
+
+#### book.service.ts
+```bash
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Book } from './model/book.model';
+import { Model } from 'mongoose';
+import { CreateBookInput } from './dto/create-book.input';
+import { UpdateBookInput } from './dto/update-book.input';
+
+@Injectable()
+export class BookService {
+    constructor( @InjectModel(Book.name) private bookModel: Model<Book> ) {}
+
+    async create(input: CreateBookInput): Promise<Book> {
+        const createdBook = new this.bookModel(input);
+        return createdBook.save();
+    }
+
+    async findAll(): Promise<Book[]> {
+        return this.bookModel.find().exec();
+    }
+
+    async findOne(id: string): Promise<Book> {
+        const book = await this.bookModel.findById(id).exec();
+        if (!book) throw new NotFoundException(`Book not found!`);
+        return book;
+    }
+
+    async update(input: UpdateBookInput): Promise<Book> {
+        const existingBook = await this.bookModel.findById(input.id);
+        if (!existingBook) throw new NotFoundException(`Book not found!`);
+
+        Object.assign(existingBook, input);
+        return existingBook.save();
+    }
+
+    async delete(id: string): Promise<boolean> {
+        const deletedBook = await this.bookModel.findByIdAndDelete(id);
+        if (!deletedBook) throw new NotFoundException(`Book not found!`);
+        return true;
+    }
+
+}
+```
+
