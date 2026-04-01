@@ -234,3 +234,52 @@ export class BookResolver {
 
 ##### visit--- localhost:3000/graphql
 
+```bash
+# mutation {
+#   createBook(input: {
+#     title: "Hello...nestjs",
+#     description: "Nestjs is joss...working!",
+#     author: "Wasim"
+#   }){
+#     _id,
+#     title,
+#     author
+#   }
+# }
+
+# query {
+#   getAllBooks {
+#     _id,
+#     title,
+#     author
+#   }
+# }
+
+# query {
+#   getBookById(id:"69cce170b94f07539d3f3909") {
+#     _id,
+#     title,
+#     author
+#   }
+# }
+
+# mutation {
+#   deleteBook (id:"69cce170b94f07539d3f3909")
+# }
+
+mutation {
+  updateBook(input:{
+    id:"69cce5b2b94f07539d3f3910",
+    title: "GraphQL is awesome!",
+    description: "joss!",
+    author: "Wasim Uddin"
+  }){
+    _id,
+    title,
+    author
+  }
+}
+```
+
+#### Output view---
+![](/public/Img/graphql.png)

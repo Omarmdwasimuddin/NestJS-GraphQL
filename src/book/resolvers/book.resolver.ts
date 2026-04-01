@@ -25,7 +25,7 @@ export class BookResolver {
     }
 
     @Mutation(() => Book)
-    async updateBook(@Args('id') input: UpdateBookInput) {
+    async updateBook(@Args('input') input: UpdateBookInput) {
         return this.bookService.update(input);
     }
 
