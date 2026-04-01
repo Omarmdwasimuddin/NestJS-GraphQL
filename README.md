@@ -63,3 +63,53 @@ nest g resolver book/resolvers/book --flat
 
 ##### file-folder create koro- book/dto/create-book.input.ts , book/dto/update-book.input.ts & book/model/book.model.ts
 
+#### book.model.ts
+```bash
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { HydratedDocument } from "mongoose";
+import { ObjectType, Field, ID } from "@nestjs/graphql";
+
+@Schema()
+@ObjectType()
+export class Book {
+
+    @Field(() => ID)
+    _id: string;
+
+    @Prop({ required: true })
+    @Field()
+    title: string;
+
+    @Prop({ nullable: true })
+    @Field()
+    description?: string;
+
+    @Prop({ required: true })
+    @Field()
+    author: string;
+
+}
+
+export type BookDocument = HydratedDocument<Book>;
+export const BookSchema = SchemaFactory.createForClass(Book);
+```
+
+#### book.module.ts
+```bash
+import { Module } from '@nestjs/common';
+import { BookService } from './book.service';
+import { BookResolver } from './resolvers/book.resolver';
+import { MongooseModule } from '@nestjs/mongoose';
+import { Book, BookSchema } from './model/book.model';
+
+@Module({
+  imports: [ MongooseModule.forFeature([{ name: Book.name, schema: BookSchema }]) ],
+  providers: [BookService, BookResolver]
+})
+export class BookModule {}
+```
+
+#### create-book.input.ts
+```bash
+
+```
